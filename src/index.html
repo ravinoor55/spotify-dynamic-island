@@ -6,25 +6,30 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="dynamic-island">
-    
-    <!-- Compact State (Just the music icon) -->
-    <div class="compact-view">
-      🎵
-    </div>
-
-    <!-- Expanded State (Album art and hardcoded text) -->
-    <div class="expanded-view">
-      <!-- A hardcoded Spotify album image -->
-      <img src="https://i.scdn.co/image/ab67616d000048511e996f136113b2c28659556a" class="album-art" />
-      
-      <div class="track-info">
-        <!-- Hardcoded text -->
-        <div class="title">Starboy</div>
-        <div class="artist">The Weeknd</div>
-      </div>
-    </div>
-
+<div class="dynamic-island">
+  
+  <!-- Compact State -->
+  <div class="compact-view">
+    🎵
   </div>
+
+  <!-- Expanded State -->
+  <div class="expanded-view">
+    <img src="https://i.scdn.co/image/ab67616d000048511e996f136113b2c28659556a" class="album-art" />
+    
+    <div class="track-info">
+      <div class="title">Starboy</div>
+      <div class="artist">The Weeknd</div>
+    </div>
+
+    <!-- NEW: Media Controls -->
+    <div class="media-controls">
+      <button class="control-btn">⏮</button>
+      <button class="control-btn play-btn">⏸</button>
+      <button class="control-btn">⏭</button>
+    </div>
+  </div>
+
+</div>
 </body>
 </html>
