@@ -100,6 +100,12 @@ body, html {
   align-items: center;
   justify-content: center;
   transition: opacity 0.2s ease, transform 0.2s ease;
+  
+  /* ADD THESE THREE LINES: */
+  position: relative;
+  z-index: 9999; /* Forces the button to the absolute front layer */
+  -webkit-app-region: no-drag; /* Tells Tauri/macOS not to swallow clicks here */
+  pointer-events: auto; /* Forces the browser to accept mouse clicks */
 }
 
 /* Make the play button slightly larger */
@@ -112,4 +118,29 @@ body, html {
 .control-btn:hover {
   opacity: 1;
   transform: scale(1.1); /* Slightly enlarges the button when hovered */
+}
+.album-art {
+  width: 50px;
+  height: 50px;
+  /* Changed from 10px to 50% to make it a perfect circle */
+  border-radius: 50%; 
+  margin-right: 15px;
+  
+  /* The spinning animation (takes 5 seconds to complete one full rotation) */
+  animation: spin 5s linear infinite;
+}
+
+/* This class will be toggled by our JavaScript */
+.album-art.paused {
+  animation-play-state: paused;
+}
+
+/* The actual rotation keyframes */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
