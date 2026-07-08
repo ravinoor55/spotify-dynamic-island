@@ -1,18 +1,20 @@
-const { invoke } = window.__TAURI__.core;
+// 1. Grab the button from the HTML using the ID we just created
+const playPauseBtn = document.getElementById("play-pause-btn");
 
-let greetInputEl;
-let greetMsgEl;
+// 2. Keep track of the state (it starts as "playing" since our default icon is pause)
+let isPlaying = true;
 
-async function greet() {
-  // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  greetMsgEl.textContent = await invoke("greet", { name: greetInputEl.value });
-}
+// 3. Listen for a click on the button
+playPauseBtn.addEventListener("click", () => {
+  
+  // Flip the state (if true, make it false; if false, make it true)
+  isPlaying = !isPlaying;
 
-window.addEventListener("DOMContentLoaded", () => {
-  greetInputEl = document.querySelector("#greet-input");
-  greetMsgEl = document.querySelector("#greet-msg");
-  document.querySelector("#greet-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    greet();
-  });
+  // Change the text (emoji) inside the button based on the new state
+  if (isPlaying) {
+    playPauseBtn.textContent = "⏸"; // Show pause if music is playing
+  } else {
+    playPauseBtn.textContent = "▶"; // Show play if music is paused
+  }
+  
 });

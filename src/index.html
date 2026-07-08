@@ -6,30 +6,31 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="dynamic-island">
-  
-  <!-- Compact State -->
-  <div class="compact-view">
-    🎵
-  </div>
-
-  <!-- Expanded State -->
-  <div class="expanded-view">
-    <img src="https://i.scdn.co/image/ab67616d000048511e996f136113b2c28659556a" class="album-art" />
+  <div class="dynamic-island">
     
-    <div class="track-info">
-      <div class="title">Starboy</div>
-      <div class="artist">The Weeknd</div>
+    <div class="compact-view">
+      🎵
     </div>
 
-    <!-- NEW: Media Controls -->
-    <div class="media-controls">
-      <button class="control-btn">⏮</button>
-      <button class="control-btn play-btn">⏸</button>
-      <button class="control-btn">⏭</button>
+    <div class="expanded-view">
+      <img src="https://i.scdn.co/image/ab67616d000048511e996f136113b2c28659556a" class="album-art" />
+      
+      <div class="track-info">
+        <div class="title">Starboy</div>
+        <div class="artist">The Weeknd</div>
+      </div>
+
+      <div class="media-controls">
+        <button class="control-btn">⏮</button>
+        <!-- Added the ID here -->
+        <button class="control-btn play-btn" id="play-pause-btn">⏸</button>
+        <button class="control-btn">⏭</button>
+      </div>
     </div>
+
   </div>
-
-</div>
+  
+  <!-- Added the script link here -->
+  <script src="main.js"></script>
 </body>
 </html>
