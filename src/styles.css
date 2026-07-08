@@ -22,6 +22,8 @@ body, html {
   box-shadow: 0 10px 20px rgba(0,0,0,0.5);
   overflow: hidden;
   position: relative;
+  -webkit-app-region: drag;
+  user-select: none;
 }
 
 /* --- Compact View (Visible by default) --- */
@@ -143,4 +145,20 @@ body, html {
   to {
     transform: rotate(360deg);
   }
+}
+/* --- Progress Bar --- */
+.equalizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 20px;
+  margin-top: 8px;
+}
+
+.bar {
+  width: 4px;
+  height: 4px;
+  background-color: white;
+  border-radius: 2px;
+  transition: height 0.1s ease;
 }
