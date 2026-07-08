@@ -1,35 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <div class="dynamic-island">
-    
-    <div class="compact-view">
-      🎵
-    </div>
 
-    <div class="expanded-view">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJUkqkUuLBuqBtKfsUwrdPKe3SW-5Worv4h1lF4cUa_g&s=10" class="album-art" />
-      
-      <div class="track-info">
-        <div class="title">Starboy</div>
-        <div class="artist">The Weeknd</div>
-        
-        <div class="equalizer" id="equalizer">
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
+<body>
+  <div class="dynamic-island-wrapper">
+    <div class="ambient-glow" id="ambient-glow"></div>
+    <div class="dynamic-island">
+
+      <div class="compact-view">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJUkqkUuLBuqBtKfsUwrdPKe3SW-5Worv4h1lF4cUa_g&s=10" class="album-art compact-art" />
+        <div class="equalizer compact-equalizer">
           <span class="bar"></span>
           <span class="bar"></span>
           <span class="bar"></span>
@@ -37,17 +22,49 @@
         </div>
       </div>
 
-      <div class="media-controls">
-        <button class="control-btn">⏮</button>
-        <button class="control-btn play-btn" id="play-pause-btn">⏸</button>
-        <button class="control-btn">⏭</button>
+      <div class="expanded-view">
+        <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJUkqkUuLBuqBtKfsUwrdPKe3SW-5Worv4h1lF4cUa_g&s=10"
+          class="album-art" />
+
+        <div class="track-info">
+          <div class="title" id="track-title">Starboy</div>
+          <div class="artist" id="track-artist">The Weeknd</div>
+
+          <div class="equalizer" id="equalizer">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </div>
+        </div>
+
+        <div class="media-controls">
+          <button class="control-btn" id="open-spotify-btn" style="margin-right: 4px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+          </button>
+          <button class="control-btn" id="prev-btn">⏮</button>
+          <button class="control-btn play-btn" id="play-pause-btn">⏸</button>
+          <button class="control-btn" id="next-btn">⏭</button>
+        </div>
       </div>
     </div>
 
   </div>
-  
-  
+
+
   <script type="module" src="./main.js"></script>
 
 </body>
+
 </html>

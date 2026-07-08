@@ -8,11 +8,16 @@
   },
   "app": {
     "withGlobalTauri": true,
+    "macOSPrivateApi": true,
     "windows": [
       {
         "title": "spotify-island",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "transparent": true,
+        "decorations": false,
+        "shadow": false,
+        "alwaysOnTop": true
       }
     ],
     "security": {

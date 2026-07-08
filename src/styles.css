@@ -8,10 +8,38 @@ body, html {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+.dynamic-island-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 15px;
+}
+
+.ambient-glow {
+  position: absolute;
+  top: 15px;
+  width: 150px;
+  height: 35px;
+  border-radius: 40px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(25px) saturate(200%);
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.dynamic-island-wrapper:hover .ambient-glow {
+  width: 380px;
+  height: 80px;
+  opacity: 0.65;
+}
+
 .dynamic-island {
   background: black;
   border-radius: 40px;
-  margin-top: 15px;
   width: 150px;
   height: 35px;
   color: white;
@@ -29,7 +57,25 @@ body, html {
 /* --- Compact View (Visible by default) --- */
 .compact-view {
   position: absolute;
+  width: 100%;
+  padding: 0 12px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   transition: opacity 0.3s ease;
+}
+
+.album-art.compact-art {
+  width: 24px;
+  height: 24px;
+  margin-right: 0;
+}
+
+.compact-equalizer {
+  height: 12px;
+  margin-top: 0;
+  gap: 2px;
 }
 
 /* --- Expanded View (Hidden by default) --- */
@@ -67,18 +113,18 @@ body, html {
 }
 
 /* --- The Magic Hover Animations --- */
-.dynamic-island:hover {
+.dynamic-island-wrapper:hover .dynamic-island {
   width: 380px;
   height: 80px;
 }
 
 /* Hide the music icon when hovering */
-.dynamic-island:hover .compact-view {
+.dynamic-island-wrapper:hover .compact-view {
   opacity: 0; 
 }
 
 /* Show the album art and text when hovering */
-.dynamic-island:hover .expanded-view {
+.dynamic-island-wrapper:hover .expanded-view {
   opacity: 1;
   transition-delay: 0.15s; /* Wait a split second for the island to stretch before showing text */
 }
