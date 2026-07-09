@@ -1,4 +1,5 @@
-body, html {
+body,
+html {
   background-color: transparent !important;
   margin: 0;
   padding: 0;
@@ -17,24 +18,7 @@ body, html {
 }
 
 .ambient-glow {
-  position: absolute;
-  top: 15px;
-  width: 150px;
-  height: 35px;
-  border-radius: 40px;
-  background-size: cover;
-  background-position: center;
-  filter: blur(25px) saturate(200%);
-  opacity: 0;
-  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: -1;
-  pointer-events: none;
-}
-
-.dynamic-island-wrapper:hover .ambient-glow {
-  width: 380px;
-  height: 80px;
-  opacity: 0.65;
+  display: none;
 }
 
 .dynamic-island {
@@ -47,7 +31,6 @@ body, html {
   align-items: center;
   justify-content: center;
   transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
   overflow: hidden;
   position: relative;
   -webkit-app-region: drag;
@@ -86,7 +69,8 @@ body, html {
   padding: 0 20px;
   opacity: 0;
   transition: opacity 0.3s ease;
-  pointer-events: none; /* Prevents text from messing up the hover */
+  pointer-events: none;
+  /* Prevents text from messing up the hover */
 }
 
 .album-art {
@@ -120,20 +104,23 @@ body, html {
 
 /* Hide the music icon when hovering */
 .dynamic-island-wrapper:hover .compact-view {
-  opacity: 0; 
+  opacity: 0;
 }
 
 /* Show the album art and text when hovering */
 .dynamic-island-wrapper:hover .expanded-view {
   opacity: 1;
-  transition-delay: 0.15s; /* Wait a split second for the island to stretch before showing text */
+  transition-delay: 0.15s;
+  /* Wait a split second for the island to stretch before showing text */
 }
+
 /* --- Media Controls --- */
 .media-controls {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-left: auto; /* Pushes the buttons to the far right */
+  margin-left: auto;
+  /* Pushes the buttons to the far right */
 }
 
 .control-btn {
@@ -148,12 +135,15 @@ body, html {
   align-items: center;
   justify-content: center;
   transition: opacity 0.2s ease, transform 0.2s ease;
-  
+
   /* ADD THESE THREE LINES: */
   position: relative;
-  z-index: 9999; /* Forces the button to the absolute front layer */
-  -webkit-app-region: no-drag; /* Tells Tauri/macOS not to swallow clicks here */
-  pointer-events: auto; /* Forces the browser to accept mouse clicks */
+  z-index: 9999;
+  /* Forces the button to the absolute front layer */
+  -webkit-app-region: no-drag;
+  /* Tells Tauri/macOS not to swallow clicks here */
+  pointer-events: auto;
+  /* Forces the browser to accept mouse clicks */
 }
 
 /* Make the play button slightly larger */
@@ -165,15 +155,17 @@ body, html {
 /* Hover effects */
 .control-btn:hover {
   opacity: 1;
-  transform: scale(1.1); /* Slightly enlarges the button when hovered */
+  transform: scale(1.1);
+  /* Slightly enlarges the button when hovered */
 }
+
 .album-art {
   width: 50px;
   height: 50px;
   /* Changed from 10px to 50% to make it a perfect circle */
-  border-radius: 50%; 
+  border-radius: 50%;
   margin-right: 15px;
-  
+
   /* The spinning animation (takes 5 seconds to complete one full rotation) */
   animation: spin 5s linear infinite;
 }
@@ -188,10 +180,12 @@ body, html {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
+
 /* --- Progress Bar --- */
 .equalizer {
   display: flex;

@@ -28,55 +28,33 @@ fn previous_track() {
 }
 
 #[tauri::command]
-async fn get_track_name() -> String {
+async fn get_spotify_state() -> String {
+    let script = r#"
+if application "Spotify" is running then
+    try
+        tell application "Spotify"
+            set tName to name of current track
+            set tArtist to artist of current track
+            set tArt to artwork url of current track
+            set pState to player state as string
+            return tName & "|||" & tArtist & "|||" & tArt & "|||" & pState
+        end tell
+    on error
+        return "error"
+    end try
+else
+    return "not_running"
+end if
+"#;
+
     let output = Command::new("osascript")
         .arg("-e")
-        .arg("tell application \"Spotify\" to name of current track")
+        .arg(script)
         .output();
 
     match output {
         Ok(output) => String::from_utf8_lossy(&output.stdout).trim().to_string(),
-        Err(_) => String::from("Unknown Track"),
-    }
-}
-
-#[tauri::command]
-async fn get_track_artist() -> String {
-    let output = Command::new("osascript")
-        .arg("-e")
-        .arg("tell application \"Spotify\" to artist of current track")
-        .output();
-
-    match output {
-        Ok(output) => String::from_utf8_lossy(&output.stdout).trim().to_string(),
-        Err(_) => String::from("Unknown Artist"),
-    }
-}
-
-// 1. ADD THIS NEW FUNCTION FOR THE ARTWORK
-#[tauri::command]
-async fn get_track_artwork() -> String {
-    let output = Command::new("osascript")
-        .arg("-e")
-        .arg("tell application \"Spotify\" to artwork url of current track")
-        .output();
-
-    match output {
-        Ok(output) => String::from_utf8_lossy(&output.stdout).trim().to_string(),
-        Err(_) => String::new(),
-    }
-}
-
-#[tauri::command]
-async fn get_player_state() -> String {
-    let output = Command::new("osascript")
-        .arg("-e")
-        .arg("tell application \"Spotify\" to player state")
-        .output();
-
-    match output {
-        Ok(output) => String::from_utf8_lossy(&output.stdout).trim().to_string(),
-        Err(_) => String::from("stopped"),
+        Err(_) => String::from("error"),
     }
 }
 
@@ -112,10 +90,7 @@ pub fn run() {
             toggle_play_pause,
             next_track,
             previous_track,
-            get_track_name,
-            get_track_artist,
-            get_track_artwork,
-            get_player_state,
+            get_spotify_state,
             open_spotify_app
         ])
         .run(tauri::generate_context!())

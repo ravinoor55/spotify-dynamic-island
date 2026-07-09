@@ -17,46 +17,51 @@ let equalizerInterval;
 // 3. Auto-fetch the song from macOS
 async function syncSpotifyData() {
   try {
-    const songName = await invoke("get_track_name");
-    const artistName = await invoke("get_track_artist");
-    const artworkUrl = await invoke("get_track_artwork"); 
-    const playerState = await invoke("get_player_state");
+    const stateStr = await invoke("get_spotify_state");
     
-    // Print the data to the console so we can debug it
-    console.log("Live Song:", songName, " | URL:", artworkUrl);
-    
-    if (songName && !songName.includes("execution error")) {
-      trackTitle.textContent = songName;
-      trackArtist.textContent = artistName;
-      
-      if (artworkUrl && artworkUrl.startsWith("http")) {
-        // Automatically handle both <img> tags and <div> tags for all album arts
-        albumArts.forEach(art => {
-          if (art.tagName.toLowerCase() === 'img') {
-            art.src = artworkUrl;
-          } else {
-            art.style.backgroundImage = `url('${artworkUrl}')`;
-          }
-        });
-        
-        // Update the ambient glow background
-        const ambientGlow = document.getElementById('ambient-glow');
-        if (ambientGlow) {
-          ambientGlow.style.backgroundImage = `url('${artworkUrl}')`;
-        }
-      }
+    if (stateStr !== "not_running" && stateStr !== "error") {
+      const parts = stateStr.split("|||");
+      if (parts.length === 4) {
+        const songName = parts[0];
+        const artistName = parts[1];
+        const artworkUrl = parts[2];
+        const playerState = parts[3];
 
-      // Sync the play/pause button state with Spotify's actual state
-      const actualIsPlaying = (playerState === 'playing');
-      if (isPlaying !== actualIsPlaying) {
-        isPlaying = actualIsPlaying;
-        playPauseBtn.textContent = isPlaying ? "⏸" : "▶"; 
-        if (isPlaying) {
-          albumArts.forEach(a => a.classList.remove("paused"));
-        } else {
-          albumArts.forEach(a => a.classList.add("paused"));
+        // Print the data to the console so we can debug it
+        console.log("Live Song:", songName, " | URL:", artworkUrl);
+        
+        trackTitle.textContent = songName;
+        trackArtist.textContent = artistName;
+        
+        if (artworkUrl && artworkUrl.startsWith("http")) {
+          // Automatically handle both <img> tags and <div> tags for all album arts
+          albumArts.forEach(art => {
+            if (art.tagName.toLowerCase() === 'img') {
+              art.src = artworkUrl;
+            } else {
+              art.style.backgroundImage = `url('${artworkUrl}')`;
+            }
+          });
+          
+          // Update the ambient glow background
+          const ambientGlow = document.getElementById('ambient-glow');
+          if (ambientGlow) {
+            ambientGlow.style.backgroundImage = `url('${artworkUrl}')`;
+          }
         }
-        updateEqualizer();
+
+        // Sync the play/pause button state with Spotify's actual state
+        const actualIsPlaying = (playerState === 'playing');
+        if (isPlaying !== actualIsPlaying) {
+          isPlaying = actualIsPlaying;
+          playPauseBtn.textContent = isPlaying ? "⏸" : "▶"; 
+          if (isPlaying) {
+            albumArts.forEach(a => a.classList.remove("paused"));
+          } else {
+            albumArts.forEach(a => a.classList.add("paused"));
+          }
+          updateEqualizer();
+        }
       }
     }
   } catch (error) {

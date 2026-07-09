@@ -12,8 +12,8 @@
     "windows": [
       {
         "title": "spotify-island",
-        "width": 800,
-        "height": 600,
+        "width": 440,
+        "height": 140,
         "transparent": true,
         "decorations": false,
         "shadow": false,
