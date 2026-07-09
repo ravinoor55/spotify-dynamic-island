@@ -74,33 +74,44 @@ html {
 }
 
 .album-art {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 10px;
   margin-right: 15px;
-  zoom: 1.2;
+  flex-shrink: 0;
 }
 
 .track-info {
   display: flex;
   flex-direction: column;
+  flex: 1 1 0%; /* strictly bound to available space */
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .title {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .artist {
   font-size: 13px;
   color: #b3b3b3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* --- The Magic Hover Animations --- */
 .dynamic-island-wrapper:hover .dynamic-island {
-  width: 380px;
-  height: 80px;
+  width: 420px;
+  height: 110px;
+  background: linear-gradient(135deg, rgba(var(--dominant-r, 0), var(--dominant-g, 0), var(--dominant-b, 0), 0.3) 0%, rgba(0,0,0,1) 70%);
 }
 
 /* Hide the music icon when hovering */
@@ -121,6 +132,7 @@ html {
   align-items: center;
   gap: 12px;
   margin-left: auto;
+  flex-shrink: 0;
   /* Pushes the buttons to the far right */
 }
 
@@ -151,6 +163,11 @@ html {
 .play-btn {
   font-size: 22px;
   opacity: 0.9;
+}
+
+/* Emojis render larger than text glyphs, so we shrink them to match */
+#like-btn, #loop-btn {
+  font-size: 14px;
 }
 
 /* Hover effects */
@@ -203,3 +220,41 @@ html {
   border-radius: 2px;
   transition: height 0.1s ease;
 }
+/* --- Progress Bar --- */
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 100px;
+  margin-top: 10px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #ffffff;
+  width: 0%;
+  min-width: 8px;
+  border-radius: 100px;
+  transition: width 0.15s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* --- Lyrics Ticker --- */
+.lyrics-ticker {
+  position: absolute;
+  bottom: 10px;
+  left: 95px; /* 20px padding + 60px art + 15px gap */
+  right: 20px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-style: italic;
+  height: 16px;
+  line-height: 16px;
+  z-index: 10;
+  transition: opacity 0.3s ease;
+}
+

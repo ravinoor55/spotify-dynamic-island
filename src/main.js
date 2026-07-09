@@ -10,9 +10,17 @@ const albumArts = document.querySelectorAll(".album-art");
 const trackTitle = document.getElementById("track-title");
 const trackArtist = document.getElementById("track-artist");
 const bars = document.querySelectorAll(".bar");
+const progressContainer = document.getElementById("progress-container");
+const loopBtn = document.getElementById("loop-btn");
+const likeBtn = document.getElementById("like-btn");
 
 let isPlaying = true;
+let isLooping = false;
 let equalizerInterval;
+let currentProgressSec = 0;
+let totalDurationSec = 0;
+let currentLyrics = [];
+let currentLyricIndex = -1;
 
 // 3. Auto-fetch the song from macOS
 async function syncSpotifyData() {
@@ -21,11 +29,21 @@ async function syncSpotifyData() {
     
     if (stateStr !== "not_running" && stateStr !== "error") {
       const parts = stateStr.split("|||");
-      if (parts.length === 4) {
+      if (parts.length >= 4) {
         const songName = parts[0];
         const artistName = parts[1];
         const artworkUrl = parts[2];
         const playerState = parts[3];
+        
+        currentProgressSec = parts.length > 4 ? parseInt(parts[4]) : 0;
+        totalDurationSec = parts.length > 5 ? Math.floor(parseInt(parts[5]) / 1000) : 0;
+        
+        if (parts.length > 6) {
+          isLooping = (parts[6] === "true");
+          if (loopBtn) {
+            loopBtn.style.color = isLooping ? "#1db954" : "white";
+          }
+        }
 
         // Print the data to the console so we can debug it
         console.log("Live Song:", songName, " | URL:", artworkUrl);
@@ -38,6 +56,43 @@ async function syncSpotifyData() {
           if (window.lastArtworkUrl !== artworkUrl) {
             window.lastArtworkUrl = artworkUrl;
             
+            // 1. Reset and Fetch Lyrics
+            currentLyrics = [];
+            currentLyricIndex = -1;
+            const lyricsTicker = document.getElementById("lyrics-ticker");
+            if (lyricsTicker) lyricsTicker.textContent = "";
+
+            const searchArtist = encodeURIComponent(artistName);
+            const searchTrack = encodeURIComponent(songName);
+            
+            fetch(`https://lrclib.net/api/get?track_name=${searchTrack}&artist_name=${searchArtist}`)
+              .then(res => res.json())
+              .then(data => {
+                if (data && data.syncedLyrics) {
+                  // Parse LRC format: [mm:ss.xx] text
+                  const lines = data.syncedLyrics.split('\n');
+                  currentLyrics = lines.map(line => {
+                    // Match [mm:ss.xx] or [mm:ss]
+                    const match = line.match(/\[(\d+):(\d+(?:\.\d+)?)\](.*)/);
+                    if (match) {
+                      const mins = parseInt(match[1]);
+                      const secs = parseFloat(match[2]);
+                      return {
+                        time: mins * 60 + secs,
+                        text: match[3].trim()
+                      };
+                    }
+                    return null;
+                  }).filter(Boolean);
+                } else if (data && data.plainLyrics) {
+                  if (lyricsTicker) lyricsTicker.textContent = "♫ (Lyrics not synced)";
+                } else {
+                  if (lyricsTicker) lyricsTicker.textContent = "♫ (No lyrics found)";
+                }
+              })
+              .catch(err => console.error("Lyrics fetch error:", err));
+            
+            // 2. Update Album Art
             albumArts.forEach(art => {
               if (art.tagName.toLowerCase() === 'img') {
                 art.src = artworkUrl;
@@ -74,9 +129,12 @@ async function syncSpotifyData() {
                 g = Math.floor(g / count);
                 b = Math.floor(b / count);
                 
-                // Apply a subtle gradient using the extracted color
+                // Pass the extracted color to CSS via variables
                 const island = document.querySelector('.dynamic-island');
-                island.style.background = `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, 0.3) 0%, rgba(0,0,0,1) 70%)`;
+                island.style.background = ''; // clear any old inline background
+                island.style.setProperty('--dominant-r', r);
+                island.style.setProperty('--dominant-g', g);
+                island.style.setProperty('--dominant-b', b);
                 
                 // Also update the ambient glow if the user wants it back later
                 const ambientGlow = document.getElementById('ambient-glow');
@@ -115,17 +173,56 @@ async function syncSpotifyData() {
 
 syncSpotifyData();
 
-// 4. Waveform Equalizer Logic
+// 4. Waveform Equalizer & Progress Bar Logic
 function updateEqualizer() {
-  if (isPlaying) {
-    bars.forEach(bar => {
-      const height = Math.random() * 16 + 4;
-      bar.style.height = `${height}px`;
-    });
-  } else {
-    bars.forEach(bar => {
-      bar.style.height = "4px";
-    });
+  // Update compact view equalizer (if it still exists)
+  if (bars.length > 0) {
+    if (isPlaying) {
+      bars.forEach(bar => {
+        const height = Math.random() * 16 + 4;
+        bar.style.height = `${height}px`;
+      });
+    } else {
+      bars.forEach(bar => {
+        bar.style.height = "4px";
+      });
+    }
+  }
+
+  // Update real progress bar
+  if (isPlaying && currentProgressSec < totalDurationSec) {
+    currentProgressSec += 0.15; // 150ms interval = 0.15s
+  }
+  
+  const fill = document.getElementById("progress-fill");
+  if (fill && totalDurationSec > 0) {
+    const percent = (currentProgressSec / totalDurationSec) * 100;
+    fill.style.width = `${Math.min(Math.max(percent, 0), 100)}%`;
+  }
+  
+  // Update Lyrics Ticker
+  if (currentLyrics.length > 0) {
+    let activeIndex = -1;
+    for (let i = 0; i < currentLyrics.length; i++) {
+      if (currentProgressSec >= currentLyrics[i].time) {
+        activeIndex = i;
+      } else {
+        break; // Lyrics are sorted chronologically
+      }
+    }
+    
+    if (activeIndex !== currentLyricIndex) {
+      currentLyricIndex = activeIndex;
+      const lyricsTicker = document.getElementById("lyrics-ticker");
+      if (lyricsTicker) {
+        if (activeIndex >= 0) {
+          lyricsTicker.textContent = currentLyrics[activeIndex].text || "♫";
+        } else {
+          // If we are before the very first lyric line
+          lyricsTicker.textContent = "♫";
+        }
+      }
+    }
   }
 }
 
@@ -167,5 +264,55 @@ if (prevBtn) {
 if (openSpotifyBtn) {
   openSpotifyBtn.addEventListener("click", () => {
     invoke("open_spotify_app");
+  });
+}
+
+// 6. Progress Bar Seeking
+if (progressContainer) {
+  progressContainer.addEventListener("click", (e) => {
+    if (totalDurationSec <= 0) return;
+    
+    // Get click position relative to the container
+    const rect = progressContainer.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percentage = clickX / rect.width;
+    
+    // Calculate new position
+    const newPositionSec = percentage * totalDurationSec;
+    
+    // Instantly update UI for immediate feedback
+    currentProgressSec = newPositionSec;
+    const fill = document.getElementById("progress-fill");
+    if (fill) {
+      fill.style.width = `${Math.min(Math.max(percentage * 100, 0), 100)}%`;
+    }
+    
+    // Tell Rust to seek in Spotify
+    invoke("seek_track", { position: newPositionSec });
+  });
+}
+
+if (loopBtn) {
+  loopBtn.addEventListener("click", () => {
+    isLooping = !isLooping;
+    loopBtn.style.color = isLooping ? "#1db954" : "white";
+    invoke("toggle_loop");
+  });
+}
+
+if (likeBtn) {
+  likeBtn.addEventListener("click", () => {
+    // Just toggle locally since AppleScript doesn't support 'Like' natively
+    const svg = likeBtn.querySelector('svg');
+    if (svg) {
+      const isLiked = svg.getAttribute('fill') === 'currentColor';
+      if (isLiked) {
+        svg.setAttribute('fill', 'none');
+        likeBtn.style.color = 'white';
+      } else {
+        svg.setAttribute('fill', 'currentColor');
+        likeBtn.style.color = '#1db954';
+      }
+    }
   });
 }

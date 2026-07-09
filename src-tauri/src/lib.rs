@@ -37,7 +37,10 @@ if application "Spotify" is running then
             set tArtist to artist of current track
             set tArt to artwork url of current track
             set pState to player state as string
-            return tName & "|||" & tArtist & "|||" & tArt & "|||" & pState
+            set pPos to player position as integer
+            set tDur to duration of current track as integer
+            set pRep to repeating as string
+            return tName & "|||" & tArtist & "|||" & tArt & "|||" & pState & "|||" & pPos & "|||" & tDur & "|||" & pRep
         end tell
     on error
         return "error"
@@ -67,6 +70,30 @@ fn open_spotify_app() {
         .expect("Failed to open Spotify");
 }
 
+#[tauri::command]
+fn seek_track(position: f64) {
+    let script = format!("tell application \"Spotify\" to set player position to {}", position as i32);
+    Command::new("osascript")
+        .arg("-e")
+        .arg(&script)
+        .spawn()
+        .expect("Failed to seek track");
+}
+
+#[tauri::command]
+fn toggle_loop() {
+    let script = r#"
+        tell application "Spotify"
+            set repeating to not repeating
+        end tell
+    "#;
+    Command::new("osascript")
+        .arg("-e")
+        .arg(script)
+        .spawn()
+        .expect("Failed to toggle loop");
+}
+
 use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -91,7 +118,9 @@ pub fn run() {
             next_track,
             previous_track,
             get_spotify_state,
-            open_spotify_app
+            open_spotify_app,
+            seek_track,
+            toggle_loop
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
