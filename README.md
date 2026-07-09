@@ -2,7 +2,7 @@
 
 A lightweight, cross-platform desktop widget inspired by Apple's Dynamic Island and Samsung's Now Bar. Built to provide a persistent, unobtrusive, and fluid media status indicator overlay for macOS and Windows.
 
-![Dynamic Island Demo](./demo.png)
+![Dynamic Island Demo](./demoo.png)
 
 ## The Architecture
 Traditional desktop applications often rely on heavy UI frameworks (like C++ or C#). To keep this widget incredibly lightweight and memory-efficient, I utilized **Tauri**. 
