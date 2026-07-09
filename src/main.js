@@ -34,19 +34,59 @@ async function syncSpotifyData() {
         trackArtist.textContent = artistName;
         
         if (artworkUrl && artworkUrl.startsWith("http")) {
-          // Automatically handle both <img> tags and <div> tags for all album arts
-          albumArts.forEach(art => {
-            if (art.tagName.toLowerCase() === 'img') {
-              art.src = artworkUrl;
-            } else {
-              art.style.backgroundImage = `url('${artworkUrl}')`;
-            }
-          });
-          
-          // Update the ambient glow background
-          const ambientGlow = document.getElementById('ambient-glow');
-          if (ambientGlow) {
-            ambientGlow.style.backgroundImage = `url('${artworkUrl}')`;
+          // Check if the song has changed to avoid redundant work
+          if (window.lastArtworkUrl !== artworkUrl) {
+            window.lastArtworkUrl = artworkUrl;
+            
+            albumArts.forEach(art => {
+              if (art.tagName.toLowerCase() === 'img') {
+                art.src = artworkUrl;
+              } else {
+                art.style.backgroundImage = `url('${artworkUrl}')`;
+              }
+            });
+            
+            // Extract dominant color from album art
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = artworkUrl;
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              const ctx = canvas.getContext("2d");
+              canvas.width = img.width;
+              canvas.height = img.height;
+              ctx.drawImage(img, 0, 0);
+              
+              try {
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imgData.data;
+                let r = 0, g = 0, b = 0, count = 0;
+                
+                // Sample every 10th pixel for speed
+                for (let i = 0; i < data.length; i += 40) {
+                  r += data[i];
+                  g += data[i+1];
+                  b += data[i+2];
+                  count++;
+                }
+                
+                r = Math.floor(r / count);
+                g = Math.floor(g / count);
+                b = Math.floor(b / count);
+                
+                // Apply a subtle gradient using the extracted color
+                const island = document.querySelector('.dynamic-island');
+                island.style.background = `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, 0.3) 0%, rgba(0,0,0,1) 70%)`;
+                
+                // Also update the ambient glow if the user wants it back later
+                const ambientGlow = document.getElementById('ambient-glow');
+                if (ambientGlow) {
+                  ambientGlow.style.backgroundImage = `url('${artworkUrl}')`;
+                }
+              } catch(e) {
+                console.error("CORS issue extracting color:", e);
+              }
+            };
           }
         }
 
